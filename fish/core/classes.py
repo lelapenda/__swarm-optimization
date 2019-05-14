@@ -24,12 +24,6 @@ class Fish():
 				"\nn_position: " + str(self.n_position) + \
 				"\ndelta_fitness: " + str(self.delta_fitness))
 
-	def set_initial_weight(self, c):
-		return (c[0].weight+c[1].weight)/2.0
-
-	def set_initial_position(self, c):
-		return (c[0].position+c[1].position)/2.0
-
 	def individual_movement(self, space):
 		r = np.random.uniform(-1,1)
 		#r = np.random.uniform(-1,1,space.dimensions)
@@ -55,11 +49,13 @@ class Fish():
 	def collective_volitive_movement(self, space, equation):
 		r = np.random.uniform(0,1)
 		#r = np.random.uniform(0,1,space.dimensions)
+		d=distance.euclidean(self.position, space.baricenter)
 
-		if equation == 1:
-			self.position = self.position - space.step_vol*r*(self.position-space.baricenter)/distance.euclidean(self.position, space.baricenter)
-		else:
-			self.position = self.position + space.step_vol*r*(self.position-space.baricenter)/distance.euclidean(self.position, space.baricenter)
+		if d!=0:
+			if equation == 1:
+				self.position = self.position - space.step_vol*r*(self.position-space.baricenter)/d
+			else:
+				self.position = self.position + space.step_vol*r*(self.position-space.baricenter)/d
 
 
 #-- Class Search Space ---------------

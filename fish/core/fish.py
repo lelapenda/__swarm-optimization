@@ -25,7 +25,7 @@ MIN_WEIGHT = 1
 
 
 N_INTERATIONS = 500000
-N_SIMULATIONS = 10
+N_SIMULATIONS = 30
 
 
 #-- Main ----------------------
