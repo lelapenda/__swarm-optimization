@@ -29,6 +29,33 @@ N_SIMULATIONS = 30
 
 
 #-- Main ----------------------
+def main(fishes, space):
+	for fish in fishes:
+		fish.individual_movement(space)
+
+	space.find_max_delta_fitness(fishes)
+
+	for fish in fishes:
+		fish.set_weight(space)
+			
+	space.compute_drift(fishes)
+
+	for fish in fishes:
+		fish.collective_instictive_movement(space)
+
+	space.compute_baricenter(fishes)
+	space.compute_overall_weight(fishes)
+
+	for fish in fishes:
+		if space.overall_weight > space.old_overall_weight:
+			fish.collective_volitive_movement(space, 1)
+		else:
+			fish.collective_volitive_movement(space, 2)
+
+
+	space.step_ind = space.step_ind - (STEP_IND_INI-STEP_IND_FIN)/(ite+1)
+	space.step_vol = space.step_vol - (STEP_VOL_INI-STEP_VOL_FIN)/(ite+1)
+
 
 
 for func in FUNCTIONS:
@@ -44,38 +71,13 @@ for func in FUNCTIONS:
 
 		for ite in range(0, N_INTERATIONS):
 
-			for fish in fishes:
-				fish.individual_movement(space)
-
-			space.find_max_delta_fitness(fishes)
-
-			for fish in fishes:
-				fish.set_weight(space)
-			
-			space.compute_drift(fishes)
-
-			for fish in fishes:
-				fish.collective_instictive_movement(space)
-
-
-			space.compute_baricenter(fishes)
-			space.compute_overall_weight(fishes)
-
-			for fish in fishes:
-				if space.overall_weight > space.old_overall_weight:
-					fish.collective_volitive_movement(space, 1)
-				else:
-					fish.collective_volitive_movement(space, 2)
-
-
-			space.step_ind = space.step_ind - (STEP_IND_INI-STEP_IND_FIN)/(ite+1)
-			space.step_vol = space.step_vol - (STEP_VOL_INI-STEP_VOL_FIN)/(ite+1)
+			main(fishes, space)
 
 			for fish in fishes:
 				if space.fitness_function(fish.position)<BEST_FITNESS:
 					BEST_FITNESS = space.fitness_function(fish.position)
 			
-			#print(BEST_FITNESS)
+			print(BEST_FITNESS)
 			FITNESS_VALUES.append(BEST_FITNESS)
 				
 		FITNESS_SIMULACOES_ITE[func].append(np.array(FITNESS_VALUES))

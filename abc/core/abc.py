@@ -26,6 +26,34 @@ N_SIMULATIONS = 30
 
 
 #-- Main ----------------------
+def main(food, space):
+
+	#evaluate fitness for food sources
+	for f in food:
+		f.set_fitness(space)
+
+	#---EMPLOYERS
+	#find new neighbour and perform greedy search
+	for idx, f in enumerate(food):
+		f.greedy_search(food, space, idx)
+
+	#compute probability
+	sumfitness = sum([f.fitness for f in food])
+	for f in food:
+		f.probability(sumfitness)
+
+	#---ONLOOKERS
+	for i in range(0,N_ONLOOKER):
+		for idx, f in enumerate(food):
+			r = np.random.uniform(0,1)
+			if r < f.p:
+				f.greedy_search(food, space, idx)
+
+	#---SCOUT
+	for i in range(0,N_FOOD):
+		if food[i].countlimit>=100:
+			food[i] = Food() #scouts look for new food
+
 
 
 for func in FUNCTIONS:
@@ -41,34 +69,7 @@ for func in FUNCTIONS:
 
 		for ite in range(0, N_INTERATIONS):
 
-			#evaluate fitness for food sources
-			for f in food:
-				f.set_fitness(space)
-
-			#---EMPLOYERS
-
-			#find new neighbour and perform greedy search
-			for idx, f in enumerate(food):
-				f.greedy_search(food, space, idx)
-
-
-			#compute probability
-			sumfitness = sum([f.fitness for f in food])
-			for f in food:
-				f.probability(sumfitness)
-
-			#---ONLOOKERS
-			for i in range(0,N_ONLOOKER):
-				for idx, f in enumerate(food):
-					r = np.random.uniform(0,1)
-					if r < f.p:
-						f.greedy_search(food, space, idx)
-		
-			#---SCOUT
-			for i in range(0,N_FOOD):
-				if food[i].countlimit>=100:
-					food[i] = Food() #scouts look for new food
-		
+			main(food, space)
 			for f in food:
 				if f.fitness < BEST_FITNESS:
 					BEST_FITNESS = f.fitness

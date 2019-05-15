@@ -96,7 +96,7 @@ class Space():
 			return np.sum(100.0 * (x[1:] - x[:-1] ** 2) ** 2 + (x[:-1] - 1) ** 2)
 
 	def find_max_delta_fitness(self, fishes):
-		self.max_delta_fitness = max([np.abs(p.delta_fitness) for p in fishes]) #e se maior delta fitness for zero? tratar excluindo essa possibilidade
+		self.max_delta_fitness = max([np.abs(p.delta_fitness) for p in fishes]) 
 
 	def compute_drift(self, fishes):
 		a = []

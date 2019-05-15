@@ -102,7 +102,7 @@ class Space():
 
 		particle.position = particle.position + particle.velocity
 
-	def move_focal(particle, ite, N_INTERATIONS):
+	def move_focal(self, particle, ite, N_INTERATIONS):
 		
 		r1=np.array([random.random() for i in range(0,self.dimensions)])
 		r2=np.array([random.random() for i in range(0,self.dimensions)])
@@ -118,7 +118,7 @@ class Space():
 			particle.velocity = self.w*(particle.velocity+self.c1*r1*(particle.pbest_position-particle.position)+self.c2*r2*(self.gbest_position-particle.position))
 			
 		for i in range (0,len(particle.velocity)):
-			particle.velocity[i] = self.lower_boundary if space.velocity[i]<self.lower_boundary else space.velocity[i]
-			particle.velocity[i] = self.upper_boundary if space.velocity[i]>self.upper_boundary else space.velocity[i]
+			particle.velocity[i] = self.lower_boundary if particle.velocity[i]<self.lower_boundary else particle.velocity[i]
+			particle.velocity[i] = self.upper_boundary if particle.velocity[i]>self.upper_boundary else particle.velocity[i]
 
 		particle.position = particle.position + particle.velocity
