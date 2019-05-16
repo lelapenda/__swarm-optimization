@@ -74,7 +74,7 @@ for func in FUNCTIONS:
 				if f.fitness < BEST_FITNESS:
 					BEST_FITNESS = f.fitness
 
-			print(BEST_FITNESS, func)
+			#print(BEST_FITNESS, func)
 			FITNESS_VALUES.append(BEST_FITNESS)
 				
 		FITNESS_SIMULACOES_ITE[func].append(np.array(FITNESS_VALUES))

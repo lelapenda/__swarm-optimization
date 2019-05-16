@@ -77,7 +77,7 @@ for func in FUNCTIONS:
 				if space.fitness_function(fish.position)<BEST_FITNESS:
 					BEST_FITNESS = space.fitness_function(fish.position)
 			
-			print(BEST_FITNESS)
+			#print(BEST_FITNESS)
 			FITNESS_VALUES.append(BEST_FITNESS)
 				
 		FITNESS_SIMULACOES_ITE[func].append(np.array(FITNESS_VALUES))
