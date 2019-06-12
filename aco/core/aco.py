@@ -8,9 +8,11 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/"
 
 
 #--- CONSTANTS --------------------
-NODES = ['A', 'B', 'C', 'D', 'E']
-EDGES = [('A','D',3.0),('A','B',2.0),('A','E',6.0),('B','C',4.0), ('B','D',3.0), ('C','D',7.0), ('C','E',3.0), ('D','E',3.0)] #undirected graph
+#NODES = ['A', 'B', 'C', 'D', 'E']
+#EDGES = [('A','D',3.0),('A','B',2.0),('A','E',6.0),('B','C',4.0), ('B','D',3.0), ('C','D',7.0), ('C','E',3.0), ('D','E',3.0)] #undirected graph
 
+NODES = ['A', 'B', 'C', 'D', 'E', 'F']
+EDGES = [('A','B',3.0),('A','C',3.0),('A','D',2.0),('A','E',7.0), ('A','F',3.0), ('B','C',3.0), ('B','D',4.0), ('B','E',5.0), ('B','F',5.0), ('C','D',1.0),('C','E',4.0), ('C','F',4.0), ('D','E',5.0), ('D','F',5.0), ('E','F',4.0)] #undirected graph
 
 
 #--- PROBLEM SETUP --------------------
@@ -67,7 +69,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 
 	space = classes.Space(Q, ALFA, BETA, RHO)
 	edges = [classes.Edge({x,y},lenght, space.Q) for x,y,lenght in EDGES]
-	graph = classes.Graph(NODES, edges, initial_node='A', final_node='A')
+	graph = classes.Graph(NODES, edges)
 	graph.set_connections(EDGES)
 	ants = [classes.Ant(graph) for i in range(0, N_ANTS)]
 
@@ -76,6 +78,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 		for i in range(0,N_ANTS):
 
 			if ants[i].has_visited_all_nodes==False:
+
 				renew_ant = main(space, ants[i], graph)
 
 				if renew_ant==True and ants[i].has_visited_all_nodes==False: #ant cannot move: reinitialize ant
@@ -87,15 +90,15 @@ for simulacoes in range(0,N_SIMULATIONS):
 						space.min_path=ants[i].path
 						space.min_visited_nodes = ants[i].visited_nodes
 
-					#graph.update_delta_pheromone(ants[i].path, space) #adjust edge's delta pheromone (for each ant)
-					#ants[i] = classes.Ant(graph)
 
 		n_ants_completed_path = len((list(filter(lambda x: x.has_visited_all_nodes==True, ants))))
 		if n_ants_completed_path==N_ANTS: #if all ants have ended
 			for ant in ants:
 				graph.update_delta_pheromone(ant.path, space) #adjust edge's delta pheromone (for each ant)
 			graph.update_pheromone(space.rho) #adjust edge's pheromone
-			break
+			
+			ants = [classes.Ant(graph) for i in range(0, N_ANTS)]
+			#break
 
 	print(space.min_visited_nodes)
 	print(space.min_lenght)

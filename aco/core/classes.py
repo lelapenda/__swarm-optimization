@@ -38,9 +38,7 @@ class Edge():
 
 
 class Graph():
-	def __init__(self, NODES, edges, initial_node, final_node):
-		self.initial_node = initial_node
-		self.final_node = final_node
+	def __init__(self, NODES, edges):
 		self.nodes = NODES
 		self.edges = edges
 		self.structure = {}
