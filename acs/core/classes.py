@@ -82,6 +82,14 @@ class Graph():
 		self.nearest_neighbor[node]=initial_node
 
 
+	def set_initial_pheromone(self, space):
+		for node in self.nodes:
+			edge = self.get_edge(node, self.nearest_neighbor[node])
+			lnn = edge.lenght
+			edge.pheromone = 1/(space.n_cities*lnn)
+			node = self.nearest_neighbor[node]
+
+
 	def get_edge(self, one_node, other_node):
 		for edge in self.edges:
 			if one_node in edge.nodes and other_node in edge.nodes:

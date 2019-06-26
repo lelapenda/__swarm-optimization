@@ -80,6 +80,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 	graph = classes.Graph(NODES, edges)
 	graph.set_connections(EDGES)
 	graph.set_nearest_neighbor()
+	graph.set_initial_pheromone(space)
 	ants = [classes.Ant(graph) for i in range(0, N_ANTS)]
 
 	for ite in range (0,N_ITERATIONS):
@@ -107,6 +108,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 			graph.update_pheromone(space.rho) #adjust edge's pheromone
 			
 			ants = [classes.Ant(graph) for i in range(0, N_ANTS)] # ant has completed and n_iterations has not finished yet, reinitialize ant
+			n_ants_completed_path=0
 
 	print(space.min_visited_nodes)
 	print(space.min_lenght)
