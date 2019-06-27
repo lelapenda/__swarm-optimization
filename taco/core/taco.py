@@ -13,15 +13,15 @@ EDGES = graph.EDGES
 
 
 #--- PROBLEM SETUP --------------------
-N_TEAMS = 1
-N_ANTS = 5 #number of ants per team
+N_TEAMS = 3
+N_ANTS = 2 #number of ants per team
 N_CITIES = 17
 EPSILON = 0.1 #paper rho
 BETA = 2
 RHO = 0.1 #paper alpha
 Q0 = 0.9
 
-N_ITERATIONS = 3000
+N_ITERATIONS = 5000
 N_SIMULATIONS = 1
 
 
@@ -54,12 +54,13 @@ def compare_ants(ant, index, team, space, graph):
 				ant2 = ants2[ants2_index][0]
 				ant, to_node, to_edge = compare_ants(ant2, team.ants.index(ant2), team, space, graph)
 				return ant, to_node, to_edge
-		else: #ant cant move - reinitialize team
+		else: #ant cant move - reinitialize ant and team
 			team.reinitialize = True
 			team.update_visited_nodes(ant.path)
 			team.ants[index] = classes.Ant(space)
 			ant, to_node, to_edge = compare_ants(team.ants[index], index, team, space, graph)
 			return ant, to_node, to_edge
+
 
 #-- Main ----------------------
 def main(space, team, graph):
@@ -83,6 +84,10 @@ def main(space, team, graph):
 
 	if set(team.visited_nodes)==set(graph.nodes):
 		team.has_visited_all_nodes = True
+		for ant in team.ants:
+			if graph.get_edge(ant.visited_nodes[-1], space.initial_node)!=None: #if there is an edge between last city and original city, TO DO: treat if there isnt
+				ant.return_initial_node=True
+				ant.visited_nodes.append(space.initial_node)
 	
 
 #--- Loop ----------------------

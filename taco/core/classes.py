@@ -53,6 +53,7 @@ class Ant():
 		self.path = []
 		self.visited_nodes = [space.initial_node]
 		self.partial_path_lenght = 0 
+		self.return_initial_node=False
 
 	def choose_edge(self, team, space, graph):
 		#find the edges connected to an ant
