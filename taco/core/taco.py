@@ -13,24 +13,29 @@ EDGES = graph.EDGES
 
 
 #--- PROBLEM SETUP --------------------
-N_TEAMS = 3
+N_TEAMS = 10
 N_ANTS = 2 #number of ants per team
-N_CITIES = 17
 EPSILON = 0.1 #paper rho
 BETA = 2
 RHO = 0.1 #paper alpha
 Q0 = 0.9
 
-N_ITERATIONS = 5000
+N_ITERATIONS = 150*N_TEAMS
 N_SIMULATIONS = 1
 
 
 
+RECURSION_DEPTH=0
+EVALUATOR = 'minmax'
 
 #-- Auxiliary --------------
 def compare_ants(ant, index, team, space, graph):
 
+		global RECURSION_DEPTH 
+		RECURSION_DEPTH = RECURSION_DEPTH + 1
+
 		r = ant.choose_edge(team, space, graph)
+
 		if r!=False:
 
 			to_edge = r[0]
@@ -38,15 +43,15 @@ def compare_ants(ant, index, team, space, graph):
 
 			#verify if this ant is the best possible ant to move to chosen city
 			ants2=[]
-			ant_distance=ant.partial_path_lenght + to_edge.lenght
+			ant_distance=ant.partial_path_lenght + to_edge.lenght + graph.get_edge(to_node, space.initial_node).lenght
 			for ant2 in team.ants:
 				if ant2 != ant:
 					if graph.get_edge(ant2.position, to_node)!=None:
-						ant2_distance=ant2.partial_path_lenght + graph.get_edge(ant2.position, to_node).lenght
+						ant2_distance=ant2.partial_path_lenght + graph.get_edge(ant2.position, to_node).lenght + graph.get_edge(to_node, space.initial_node).lenght
 						if ant2_distance<ant_distance:
 							ants2.append((ant2, ant2_distance))
 
-			if ants2==[]:
+			if ants2==[] or RECURSION_DEPTH>5:
 				return ant, to_node, to_edge
 			else: #there are better ants
 				d = [x[1] for x in ants2]
@@ -69,6 +74,8 @@ def main(space, team, graph):
 	index = a.index(min(a))
 	ant = team.ants[index]
 
+	global RECURSION_DEPTH
+	RECURSION_DEPTH=0
 	ant, to_node, to_edge = compare_ants(ant, index, team, space, graph)
 
 	#local pheromone update
@@ -87,12 +94,15 @@ def main(space, team, graph):
 		for ant in team.ants:
 			if graph.get_edge(ant.visited_nodes[-1], space.initial_node)!=None: #if there is an edge between last city and original city, TO DO: treat if there isnt
 				ant.return_initial_node=True
+				ant.path.append(graph.get_edge(ant.visited_nodes[-1], space.initial_node))
 				ant.visited_nodes.append(space.initial_node)
+				ant.partial_path_lenght = graph.get_path_lenght(ant.path)
 	
 
 #--- Loop ----------------------
 for simulacoes in range(0,N_SIMULATIONS):
 
+	N_CITIES = len(NODES)
 	space = classes.Space(Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES)
 	edges = [classes.Edge({x,y},lenght) for x,y,lenght in EDGES]
 	graph = classes.Graph(NODES, edges)
@@ -113,10 +123,10 @@ for simulacoes in range(0,N_SIMULATIONS):
 				main(space, teams[i], graph)
 
 				if teams[i].has_visited_all_nodes==True: #ant has completed graph
-					r = teams[i].square_sum()
+					r = teams[i].evaluation(EVALUATOR)
 					if r<space.best_team_square_sum:
 						space.best_team=teams[i]
-						space.best_team_square_sum = space.best_team.square_sum()
+						space.best_team_square_sum = r
 				elif teams[i].reinitialize==True:
 					teams[i] = classes.Team(space, N_ANTS)
 
@@ -133,3 +143,19 @@ for simulacoes in range(0,N_SIMULATIONS):
 	for ant in space.best_team.ants:
 		print(ant.visited_nodes)
 	print(space.best_team_square_sum)
+
+
+
+cost=0
+for ant in space.best_team.ants:
+	ant.visited_nodes = graph.two_opt(ant.visited_nodes)
+	ant.path=[]
+	ant.partial_path_lenght=0
+	for n in range(1,len(ant.visited_nodes)):
+		edge = graph.get_edge(ant.visited_nodes[n-1], ant.visited_nodes[n])
+		ant.path.append(edge)
+	ant.partial_path_lenght = graph.get_path_lenght(ant.path)
+	print(ant.visited_nodes)
+
+cost = space.best_team.evaluation(EVALUATOR)
+print(cost)

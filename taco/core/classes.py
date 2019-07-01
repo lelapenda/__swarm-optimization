@@ -16,7 +16,7 @@ class Space():
 		self.n_ants = N_ANTS
 		self.best_team = None
 		self.best_team_square_sum = float('inf')
-		self.initial_node = random.choice(NODES)
+		self.initial_node = '1'#random.choice(NODES)
 		self.visited_nodes = [self.initial_node]
 
 
@@ -39,37 +39,40 @@ class Team():
 			if node in self.visited_nodes:
 				self.visited_nodes.remove(node)
 
-	def square_sum(self):
-		r=0
-		for ant in self.ants:
-			r=r+ant.partial_path_lenght**2
-		return r
+	def evaluation(self, evaluator):
+		if evaluator=='square_sum':
+			return sum([x.partial_path_lenght**2 for x in self.ants])
+		if evaluator=='minmax':
+			path_lenghts = [x.partial_path_lenght for x in self.ants]
+			index = path_lenghts.index(max(path_lenghts))
+			longest_path = self.ants[index].partial_path_lenght
+			return longest_path
 
 
 
 class Ant():
 	def __init__(self, space):
-		self.position = space.initial_node
+		self.position = '1'#space.initial_node
 		self.path = []
 		self.visited_nodes = [space.initial_node]
 		self.partial_path_lenght = 0 
-		self.return_initial_node=False
+		self.return_initial_node = False
 
 	def choose_edge(self, team, space, graph):
 		#find the edges connected to an ant
-		team_possible_edges = []
+		ant_possible_edges = []
 		for id_, to_node in enumerate(graph.structure[self.position]):
 			if to_node not in team.visited_nodes: #avoids ant to go back to already visited position
-				team_possible_edges.append(graph.get_edge(one_node=self.position, other_node=to_node))
+				ant_possible_edges.append(graph.get_edge(one_node=self.position, other_node=to_node))
 					
 		#e.g.: A -> B or C -> C but C only connects to A (already visited), therefore ant cannot continue exploring this path and has to be reinitialized
-		if team_possible_edges==[]:
+		if ant_possible_edges==[]:
 			return False #reset ant
-				
-		l=[edge.pheromone*edge.desirability**(space.beta) for edge in team_possible_edges]
+		
+		l=[edge.pheromone*edge.desirability**(space.beta) for edge in ant_possible_edges]
 		q = np.random.uniform(0,1)
 		#acs transition
-		if q<space.Q0: #exploitation
+		if q<=space.Q0: #exploitation
 			edge_index = l.index(max(l))
 		else: #biased exploration - ant system transition rule
 			probability=[]
@@ -78,7 +81,7 @@ class Ant():
 			indexes=[i for i, x in enumerate(probability)] 
 			edge_index = np.random.choice(indexes, 1, p=probability)[0] #get index of edge chosen by ant 
 
-		to_edge = team_possible_edges[edge_index]
+		to_edge = ant_possible_edges[edge_index]
 		to_node = list(filter(lambda x: x!=self.position, to_edge.nodes))[0]
 
 		return [to_edge, to_node]
@@ -173,4 +176,27 @@ class Graph():
 		delta_pheromone = 1/(space.n_cities*lnn)
 		edge.pheromone = (1-space.epsilon)*edge.pheromone + space.epsilon*delta_pheromone
 
+
+	def two_opt(self, route):
+	    best = route
+	    improved = True
+	    cost_best=0
+	    for n in range(1,len(route)):
+	        cost_best = cost_best + self.get_edge(route[n-1], route[n]).lenght
+	    while improved:
+	         improved = False
+	         for i in range(1, len(route)-2):
+	              for j in range(i+1, len(route)):
+	                   if j-i == 1: continue # changes nothing, skip then
+	                   new_route = route[:]
+	                   new_route[i:j] = route[j-1:i-1:-1] # this is the 2woptSwap
+	                   cost_new_route=0
+	                   for n in range(1,len(new_route)):
+	                   		cost_new_route = cost_new_route + self.get_edge(new_route[n-1], new_route[n]).lenght
+	                   if cost_new_route < cost_best:
+	                        best = new_route
+	                        cost_best = cost_new_route
+	                        improved = True
+	         route = best
+	    return best
 

@@ -55,21 +55,35 @@ coordinates = [
 [30,40]
 ]
 
-salesman1=['1', '27', '51', '46', '32', '2', '22', '8', '48', '6', '14', '24', '23', '26', '31', '28', '3', '35', '36', '20', '29', '21', '50', '34', '30', '5', '12', '7', '43', '1']
-salesman2=['1', '11', '16', '9', '38', '49', '47', '18', '25', '13', '41', '40', '19', '42', '4', '17', '44', '37', '15', '33', '45', '10', '39', '1']
+n_salesmen=2
+salesmen=[]
 
-initial_city=coordinates[int(salesman1[0])-1]
-s1cities=[]
-s2cities=[]
+#salesmen.append(['1', '51', '47', '18', '4', '42', '19', '40', '41', '13', '25', '14', '24', '43', '7', '23', '6', '27', '1'])
+#salesmen.append(['1', '46', '12', '17', '37', '44', '45', '15', '5', '49', '10', '33', '39', '30', '9', '38', '11', '1'])
+#salesmen.append(['1', '32', '16', '50', '34', '21', '29', '2', '20', '35', '36', '3', '22', '28', '31', '26', '8', '48', '1'])
 
-for city in salesman1:
-	s1cities.append(coordinates[int(city)-1])
+#salesmen.append(['1', '31', '7', '23', '43', '24', '14', '25', '13', '41', '40', '19', '4', '18', '47', '46', '27', '1'])
+#salesmen.append(['1', '22', '8', '28', '3', '36', '35', '20', '2', '29', '21', '34', '50', '16', '9', '49', '5', '38', '11', '32', '1'])
+#salesmen.append(['1', '26', '48', '6', '51', '12', '37', '17', '42', '44', '15', '45', '33', '39', '10', '30', '1'])
 
-for city in salesman2:
-	s2cities.append(coordinates[int(city)-1])
+#minmax:244
+salesmen.append(['1', '8', '48', '14', '25', '24', '43', '23', '7', '26', '31', '28', '3', '36', '35', '20', '29', '21', '34', '50', '16', '11', '2', '22', '1'])
+salesmen.append(['1', '32', '46', '51', '47', '12', '5', '38', '49', '9', '30', '10', '39', '33', '45', '15', '37', '17', '44', '42', '19', '40', '41', '13', '4', '18', '6', '27', '1'])
 
-plt.plot([x[0] for x in s1cities], [x[1] for x in s1cities], 'xb-')
-plt.plot([x[0] for x in s2cities], [x[1] for x in s2cities], 'xr-')
+
+initial_city=coordinates[int(salesmen[0][0])-1]
+
+scities=[]
+for i in range(0, n_salesmen):
+	scities.append([])
+	for city in salesmen[i]:
+		scities[i].append(coordinates[int(city)-1])
+
+
+color=['xb-', 'xr-', 'xc-', 'xy-']
+for i in range(0, n_salesmen):
+	plt.plot([x[0] for x in scities[i]], [x[1] for x in scities[i]], color[i])
+
 plt.plot([initial_city[0]], [initial_city[1]], 'xg')
 
 
