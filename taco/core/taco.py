@@ -107,8 +107,9 @@ for simulacoes in range(0,N_SIMULATIONS):
 	edges = [classes.Edge({x,y},lenght) for x,y,lenght in EDGES]
 	graph = classes.Graph(NODES, edges)
 	graph.set_connections(EDGES)
-	graph.set_nearest_neighbor()
-	graph.set_initial_pheromone(space)
+	#---nearest neighbor heuristic (uncomment two lines below) 
+	#graph.set_nearest_neighbor()
+	#graph.set_initial_pheromone(space)
 
 	teams = []
 	for team in range(N_TEAMS):
@@ -140,9 +141,9 @@ for simulacoes in range(0,N_SIMULATIONS):
 			n_teams_completed_path=0
 
 
-	for ant in space.best_team.ants:
-		print(ant.visited_nodes)
-	print(space.best_team_square_sum)
+#	for ant in space.best_team.ants:
+#		print(ant.visited_nodes)
+#	print(space.best_team_square_sum)
 
 
 

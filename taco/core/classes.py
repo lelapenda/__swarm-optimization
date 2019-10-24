@@ -171,9 +171,10 @@ class Graph():
 			edge.sum_delta_pheromone=0
 
 	def local_pheromone_update(self, edge, ant_previous_position, space):
-		#lnn heuristic used is the shortest edge lenght from actual node **
-		lnn = self.get_edge(ant_previous_position, self.nearest_neighbor[ant_previous_position]).lenght
-		delta_pheromone = 1/(space.n_cities*lnn)
+		delta_pheromone=1
+		#---nearest neighbor heuristic (uncomment two lines below)
+		#lnn = self.get_edge(ant_previous_position, self.nearest_neighbor[ant_previous_position]).lenght
+		#delta_pheromone = 1/(space.n_cities*lnn)
 		edge.pheromone = (1-space.epsilon)*edge.pheromone + space.epsilon*delta_pheromone
 
 

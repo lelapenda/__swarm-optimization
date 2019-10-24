@@ -79,7 +79,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 	graph = classes.Graph(NODES, edges)
 	graph.set_connections(EDGES)
 	#---nearest neighbor heuristic (uncomment two lines below) 
-	#graph.set_nearest_neighbor() #nearest neighbor heuristic
+	#graph.set_nearest_neighbor()
 	#graph.set_initial_pheromone(space)
 	ants = [classes.Ant(graph) for i in range(0, N_ANTS)]
 
