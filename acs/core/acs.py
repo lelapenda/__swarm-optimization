@@ -13,8 +13,8 @@ EDGES = graph.EDGES
 
 
 #--- PROBLEM SETUP --------------------
-N_ANTS = 5
-N_CITIES = 17
+N_CITIES = len(NODES)
+N_ANTS = 10
 Q = 100
 EPSILON = 0.1 #paper rho
 BETA = 2
@@ -52,7 +52,6 @@ def main(space, ant, graph):
 		indexes=[i for i, x in enumerate(probability)] 
 		edge_index = np.random.choice(indexes, 1, p=probability)[0] #get index of edge chosen by ant 
 
-
 	#local pheromone update
 	graph.local_pheromone_update(ant_possible_edges[edge_index], ant.position, space) #old position (not updated yet)
 
@@ -79,8 +78,9 @@ for simulacoes in range(0,N_SIMULATIONS):
 	edges = [classes.Edge({x,y},lenght, space.Q) for x,y,lenght in EDGES]
 	graph = classes.Graph(NODES, edges)
 	graph.set_connections(EDGES)
-	graph.set_nearest_neighbor()
-	graph.set_initial_pheromone(space)
+	#---nearest neighbor heuristic (uncomment two lines below) 
+	#graph.set_nearest_neighbor() #nearest neighbor heuristic
+	#graph.set_initial_pheromone(space)
 	ants = [classes.Ant(graph) for i in range(0, N_ANTS)]
 
 	for ite in range (0,N_ITERATIONS):

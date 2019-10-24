@@ -34,9 +34,9 @@ class Edge():
 	def __init__(self, nodes, lenght, Q):
 		self.pheromone = 1.0
 		self.sum_delta_pheromone = 0.0
-		self.desirability = 1/lenght
+		self.desirability = 1/lenght #edge lenght
 		self.nodes = nodes
-		self.lenght = lenght
+		self.lenght = lenght #edge lenght
 
 
 
@@ -55,6 +55,7 @@ class Graph():
 			self.structure[edge[0]].add(edge[1])
 			self.structure[edge[1]].add(edge[0])
 
+	'''
 	def set_nearest_neighbor(self):
 		node = random.choice(self.nodes)
 		visited_nodes = [node]
@@ -80,7 +81,7 @@ class Graph():
 			node = self.nearest_neighbor[node]
 
 		self.nearest_neighbor[node]=initial_node
-
+	
 
 	def set_initial_pheromone(self, space):
 		for node in self.nodes:
@@ -88,8 +89,8 @@ class Graph():
 			lnn = edge.lenght
 			edge.pheromone = 1/(space.n_cities*lnn)
 			node = self.nearest_neighbor[node]
-
-
+	'''
+	
 	def get_edge(self, one_node, other_node):
 		for edge in self.edges:
 			if one_node in edge.nodes and other_node in edge.nodes:
@@ -110,9 +111,10 @@ class Graph():
 			edge.sum_delta_pheromone=0
 
 	def local_pheromone_update(self, edge, ant_previous_position, space):
-		#lnn heuristic used is the shortest edge lenght from actual node **
-		lnn = self.get_edge(ant_previous_position, self.nearest_neighbor[ant_previous_position]).lenght
-		delta_pheromone = 1/(space.n_cities*lnn)
+		delta_pheromone=1
+		#---nearest neighbor heuristic (uncomment two lines below)
+		#lnn = self.get_edge(ant_previous_position, self.nearest_neighbor[ant_previous_position]).lenght
+		#delta_pheromone = 1/(space.n_cities*lnn)
 		edge.pheromone = (1-space.epsilon)*edge.pheromone + space.epsilon*delta_pheromone
 
 
