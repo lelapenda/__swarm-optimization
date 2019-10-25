@@ -113,6 +113,63 @@ class Graph():
 			self.structure[edge[0]].add(edge[1])
 			self.structure[edge[1]].add(edge[0])
 
+	def get_edge(self, one_node, other_node):
+		for edge in self.edges:
+			if one_node in edge.nodes and other_node in edge.nodes:
+				return edge
+
+	def get_path_lenght(self, path):
+		l = sum([edge.lenght for edge in path])
+		return l
+
+	#revisar de acordo com acs
+	def update_delta_pheromone(self, space):
+		path_lenghts = [x.partial_path_lenght for x in space.best_team.ants]
+		index = path_lenghts.index(max(path_lenghts))
+		longest_path = space.best_team.ants[index].partial_path_lenght
+		for ant in space.best_team.ants:
+			for edge in ant.path:
+				edge.sum_delta_pheromone = edge.sum_delta_pheromone + 1/(space.n_ants*longest_path)
+
+	#revisar de acordo com acs
+	def update_pheromone(self, space):
+		for edge in self.edges:
+			#evaporate
+			edge.pheromone = (1-space.rho)*edge.pheromone + space.rho*edge.sum_delta_pheromone
+			edge.sum_delta_pheromone=0
+
+	def local_pheromone_update(self, edge, ant_previous_position, space):
+		delta_pheromone=1
+		#---nearest neighbor heuristic (uncomment two lines below)
+		#lnn = self.get_edge(ant_previous_position, self.nearest_neighbor[ant_previous_position]).lenght
+		#delta_pheromone = 1/(space.n_cities*lnn)
+		edge.pheromone = (1-space.epsilon)*edge.pheromone + space.epsilon*delta_pheromone
+
+	def two_opt(self, route):
+	    best = route
+	    improved = True
+	    cost_best=0
+	    for n in range(1,len(route)):
+	        cost_best = cost_best + self.get_edge(route[n-1], route[n]).lenght
+	    while improved:
+	         improved = False
+	         for i in range(1, len(route)-2):
+	              for j in range(i+1, len(route)):
+	                   if j-i == 1: continue # changes nothing, skip then
+	                   new_route = route[:]
+	                   new_route[i:j] = route[j-1:i-1:-1] # this is the 2woptSwap
+	                   cost_new_route=0
+	                   for n in range(1,len(new_route)):
+	                   		cost_new_route = cost_new_route + self.get_edge(new_route[n-1], new_route[n]).lenght
+	                   if cost_new_route < cost_best:
+	                        best = new_route
+	                        cost_best = cost_new_route
+	                        improved = True
+	         route = best
+	    return best
+
+	#nearest neighbor heuristic (uncomment lines below)   
+	'''
 	def set_nearest_neighbor(self):
 		node = random.choice(self.nodes)
 		visited_nodes = [node]
@@ -138,7 +195,7 @@ class Graph():
 			node = self.nearest_neighbor[node]
 
 		self.nearest_neighbor[node]=initial_node
-
+	
 	def set_initial_pheromone(self, space):
 		for node in self.nodes:
 			if self.get_edge(node, self.nearest_neighbor[node])!=None: #there wont be an edge in the graph for the last connect node in nearest neighbor
@@ -146,58 +203,4 @@ class Graph():
 				lnn = edge.lenght
 				edge.pheromone = 1/(space.n_cities*lnn)
 				node = self.nearest_neighbor[node]
-
-	def get_edge(self, one_node, other_node):
-		for edge in self.edges:
-			if one_node in edge.nodes and other_node in edge.nodes:
-				return edge
-
-	def get_path_lenght(self, path):
-		l = sum([edge.lenght for edge in path])
-		return l
-
-	def update_delta_pheromone(self, space):
-		path_lenghts = [x.partial_path_lenght for x in space.best_team.ants]
-		index = path_lenghts.index(max(path_lenghts))
-		longest_path = space.best_team.ants[index].partial_path_lenght
-		for ant in space.best_team.ants:
-			for edge in ant.path:
-				edge.sum_delta_pheromone = edge.sum_delta_pheromone + 1/(space.n_ants*longest_path)
-
-	def update_pheromone(self, rho):
-		for edge in self.edges:
-			#evaporate
-			edge.pheromone = (1-rho)*edge.pheromone + rho*edge.sum_delta_pheromone
-			edge.sum_delta_pheromone=0
-
-	def local_pheromone_update(self, edge, ant_previous_position, space):
-		delta_pheromone=1
-		#---nearest neighbor heuristic (uncomment two lines below)
-		#lnn = self.get_edge(ant_previous_position, self.nearest_neighbor[ant_previous_position]).lenght
-		#delta_pheromone = 1/(space.n_cities*lnn)
-		edge.pheromone = (1-space.epsilon)*edge.pheromone + space.epsilon*delta_pheromone
-
-
-	def two_opt(self, route):
-	    best = route
-	    improved = True
-	    cost_best=0
-	    for n in range(1,len(route)):
-	        cost_best = cost_best + self.get_edge(route[n-1], route[n]).lenght
-	    while improved:
-	         improved = False
-	         for i in range(1, len(route)-2):
-	              for j in range(i+1, len(route)):
-	                   if j-i == 1: continue # changes nothing, skip then
-	                   new_route = route[:]
-	                   new_route[i:j] = route[j-1:i-1:-1] # this is the 2woptSwap
-	                   cost_new_route=0
-	                   for n in range(1,len(new_route)):
-	                   		cost_new_route = cost_new_route + self.get_edge(new_route[n-1], new_route[n]).lenght
-	                   if cost_new_route < cost_best:
-	                        best = new_route
-	                        cost_best = cost_new_route
-	                        improved = True
-	         route = best
-	    return best
-
+	'''

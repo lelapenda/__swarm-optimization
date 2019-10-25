@@ -13,6 +13,7 @@ EDGES = graph.EDGES
 
 
 #--- PROBLEM SETUP --------------------
+N_CITIES = len(NODES)
 N_TEAMS = 10
 N_ANTS = 2 #number of ants per team
 EPSILON = 0.1 #paper rho
@@ -102,7 +103,6 @@ def main(space, team, graph):
 #--- Loop ----------------------
 for simulacoes in range(0,N_SIMULATIONS):
 
-	N_CITIES = len(NODES)
 	space = classes.Space(Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES)
 	edges = [classes.Edge({x,y},lenght) for x,y,lenght in EDGES]
 	graph = classes.Graph(NODES, edges)
@@ -135,7 +135,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 		if n_teams_completed_path==N_TEAMS: #if all teams have completed
 			
 			graph.update_delta_pheromone(space) #adjust edge's delta pheromone (for each ant)
-			graph.update_pheromone(space.rho) #adjust edge's pheromone
+			graph.update_pheromone(space) #adjust edge's pheromone
 			
 			teams = [classes.Team(space, N_ANTS) for i in range(0, N_TEAMS)] # team has completed and n_iterations has not finished yet, reinitialize team
 			n_teams_completed_path=0
