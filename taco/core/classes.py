@@ -7,7 +7,7 @@ import pandas as pd
 
 
 class Space():
-	def __init__(self, Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES, INITIAL_NODE):
+	def __init__(self, Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES, INITIAL_NODE, RETURN_INITIAL_NODE):
 		self.Q0 = Q0
 		self.beta = BETA
 		self.rho = RHO
@@ -18,6 +18,7 @@ class Space():
 		self.best_team_metric = float('inf')
 		self.initial_node = INITIAL_NODE #random.choice(NODES)
 		self.visited_nodes = [self.initial_node]
+		self.return_initial_node = RETURN_INITIAL_NODE
 
 
 
@@ -56,7 +57,6 @@ class Ant():
 		self.path = []
 		self.visited_nodes = [space.initial_node]
 		self.partial_path_lenght = 0 
-		self.return_initial_node = False
 
 	def choose_edge(self, team, space, graph): #implements transition rule
 

@@ -11,6 +11,7 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/"
 NODES = graph.NODES
 EDGES = graph.EDGES 
 INITIAL_NODE = '1'
+RETURN_INITIAL_NODE = True
 
 #--- PROBLEM SETUP --------------------
 N_CITIES = len(NODES)
@@ -92,16 +93,16 @@ def main(space, team, graph):
 		team.has_visited_all_nodes = True
 		for ant in team.ants:
 			if graph.get_edge(ant.visited_nodes[-1], space.initial_node)!=None: #if there is an edge between last city and original city, TO DO: treat if there isnt
-				ant.return_initial_node=True
-				ant.path.append(graph.get_edge(ant.visited_nodes[-1], space.initial_node))
-				ant.visited_nodes.append(space.initial_node)
-				ant.partial_path_lenght = graph.get_path_lenght(ant.path)
+				if space.return_initial_node==True:
+					ant.path.append(graph.get_edge(ant.visited_nodes[-1], space.initial_node))
+					ant.visited_nodes.append(space.initial_node)
+					ant.partial_path_lenght = graph.get_path_lenght(ant.path)
 	
 
 #--- Loop ----------------------
 for simulacoes in range(0,N_SIMULATIONS):
 
-	space = classes.Space(Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES, INITIAL_NODE)
+	space = classes.Space(Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES, INITIAL_NODE, RETURN_INITIAL_NODE)
 	edges = [classes.Edge({x,y},lenght) for x,y,lenght in EDGES]
 	graph = classes.Graph(NODES, edges)
 	graph.set_connections(EDGES)

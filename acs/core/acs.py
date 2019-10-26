@@ -27,43 +27,21 @@ N_SIMULATIONS = 1
 #-- Main ----------------------
 def main(space, ant, graph):
 
-	#find the edges connected to an ant
-	ant_possible_edges = []
-	for id_, to_node in enumerate(graph.structure[ant.position]):
-		if to_node not in ant.visited_nodes: #avoids ant to go back to already visited position
-			ant_possible_edges.append(graph.get_edge(one_node=ant.position, other_node=to_node))
-			
-	#e.g.: A -> B or C -> C but C only connects to A (already visited), therefore ant cannot continue exploring this path and has to be reinitialized
-	if ant_possible_edges==[]:
-		return True
-		
-	l=[edge.pheromone*edge.desirability**(space.beta) for edge in ant_possible_edges]
-	q = np.random.uniform(0,1)
-
-	#acs transition
-	if q<space.Q0: #exploitation
-		edge_index = l.index(max(l))
-	else: #biased exploration - ant system transition rule
-		probability=[]
-		sum_pheromone_desirability = sum([v for v in l])
-		probability = [v/sum_pheromone_desirability for v in l]
-
-		indexes=[i for i, x in enumerate(probability)] 
-		edge_index = np.random.choice(indexes, 1, p=probability)[0] #get index of edge chosen by ant 
+	r = ant.choose_edge(space, graph)
+	to_edge = r[0]
+	to_node = r[1]
 
 	#local pheromone update
-	graph.local_pheromone_update(ant_possible_edges[edge_index], ant.position, space) #old position (not updated yet)
+	graph.local_pheromone_update(to_edge, ant.position, space) #old position (not updated yet)
 
 	#move ant to new position
-	to_edge = ant_possible_edges[edge_index]
-	to_node = list(filter(lambda x: x!=ant.position, to_edge.nodes))[0] #get ant's next node
 	ant.position = to_node #update ant's position
 	ant.path.append(to_edge)
 	ant.visited_nodes.append(ant.position) #update ant's visited nodes
 
 	if set(ant.visited_nodes)==set(graph.nodes): #ant has visited all nodes
 		ant.has_visited_all_nodes = True
-		#return to original city
+		#return to original city -- comment two lines below if not necessary
 		ant.path.append(graph.get_edge(ant.visited_nodes[-1], space.initial_node))
 		ant.visited_nodes.append(space.initial_node)
 		return True
