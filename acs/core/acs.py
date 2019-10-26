@@ -61,9 +61,9 @@ def main(space, ant, graph):
 	ant.path.append(to_edge)
 	ant.visited_nodes.append(ant.position) #update ant's visited nodes
 
-	if set(ant.visited_nodes)==set(graph.nodes):
-		#ant has visited all nodes: set ant path
+	if set(ant.visited_nodes)==set(graph.nodes): #ant has visited all nodes
 		ant.has_visited_all_nodes = True
+		#return to original city
 		ant.path.append(graph.get_edge(ant.visited_nodes[-1], space.initial_node))
 		ant.visited_nodes.append(space.initial_node)
 		return True
@@ -83,7 +83,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 	#graph.set_nearest_neighbor()
 	#graph.set_initial_pheromone(space)
 
-	ants = [classes.Ant(graph, space) for i in range(0, N_ANTS)]
+	ants = [classes.Ant(space) for i in range(0, N_ANTS)]
 
 	for ite in range (0,N_ITERATIONS):
 
@@ -94,7 +94,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 				renew_ant = main(space, ants[i], graph)
 
 				if renew_ant==True and ants[i].has_visited_all_nodes==False: #ant cannot move: reinitialize ant
-					ants[i] = classes.Ant(graph, space)
+					ants[i] = classes.Ant(space)
 				if renew_ant==True and ants[i].has_visited_all_nodes==True: #ant has completed graph
 					l = graph.get_path_lenght(ants[i].path)
 					if l<space.min_lenght:
@@ -106,9 +106,7 @@ for simulacoes in range(0,N_SIMULATIONS):
 		n_ants_completed_path = len((list(filter(lambda x: x.has_visited_all_nodes==True, ants))))
 		if n_ants_completed_path==N_ANTS: #if all ants have ended
 			graph.update_pheromone(space) #adjust edge's pheromone
-			
-			ants = [classes.Ant(graph, space) for i in range(0, N_ANTS)] # ant has completed and n_iterations has not finished yet, reinitialize ant
-			n_ants_completed_path=0
+			ants = [classes.Ant(space) for i in range(0, N_ANTS)] # ant has completed and n_iterations has not finished yet, reinitialize ant
 
 	print(space.min_visited_nodes)
 	print(space.min_lenght)

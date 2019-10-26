@@ -21,7 +21,7 @@ class Space():
 
 
 class Ant():
-	def __init__(self, graph, space):
+	def __init__(self, space):
 		self.position = space.initial_node
 		self.visited_nodes = [self.position]
 		self.path = []
@@ -66,9 +66,9 @@ class Graph():
 		for edge in self.edges: #space.min_path:
 			if edge in space.min_path:
 				delta_pheromone = 1/space.min_lenght
-				edge.pheromone = (1-space.rho)*edge.pheromone + space.rho*delta_pheromone
 			else:
-				edge.pheromone = (1-space.rho)*edge.pheromone 
+				delta_pheromone = 0 
+			edge.pheromone = (1-space.rho)*edge.pheromone + space.rho*delta_pheromone
 
 	def local_pheromone_update(self, edge, ant_previous_position, space):
 		delta_pheromone=1 # the same as initial pheromone
