@@ -7,7 +7,7 @@ import pandas as pd
 
 
 class Space():
-	def __init__(self, Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES):
+	def __init__(self, Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES, INITIAL_NODE):
 		self.Q0 = Q0
 		self.beta = BETA
 		self.rho = RHO
@@ -15,8 +15,8 @@ class Space():
 		self.n_cities = N_CITIES
 		self.n_ants = N_ANTS
 		self.best_team = None
-		self.best_team_square_sum = float('inf')
-		self.initial_node = '1'#random.choice(NODES)
+		self.best_team_metric = float('inf')
+		self.initial_node = INITIAL_NODE #random.choice(NODES)
 		self.visited_nodes = [self.initial_node]
 
 
@@ -52,13 +52,14 @@ class Team():
 
 class Ant():
 	def __init__(self, space):
-		self.position = '1'#space.initial_node
+		self.position = space.initial_node
 		self.path = []
 		self.visited_nodes = [space.initial_node]
 		self.partial_path_lenght = 0 
 		self.return_initial_node = False
 
-	def choose_edge(self, team, space, graph):
+	def choose_edge(self, team, space, graph): #implements transition rule
+
 		#find the edges connected to an ant
 		ant_possible_edges = []
 		for id_, to_node in enumerate(graph.structure[self.position]):
@@ -122,21 +123,12 @@ class Graph():
 		l = sum([edge.lenght for edge in path])
 		return l
 
-	#revisar de acordo com acs
-	def update_delta_pheromone(self, space):
+	def update_pheromone(self, space):
 		path_lenghts = [x.partial_path_lenght for x in space.best_team.ants]
 		index = path_lenghts.index(max(path_lenghts))
 		longest_path = space.best_team.ants[index].partial_path_lenght
-		for ant in space.best_team.ants:
-			for edge in ant.path:
-				edge.sum_delta_pheromone = edge.sum_delta_pheromone + 1/(space.n_ants*longest_path)
-
-	#revisar de acordo com acs
-	def update_pheromone(self, space):
 		for edge in self.edges:
-			#evaporate
-			edge.pheromone = (1-space.rho)*edge.pheromone + space.rho*edge.sum_delta_pheromone
-			edge.sum_delta_pheromone=0
+			edge.pheromone = (1-space.rho)*edge.pheromone + space.rho*1/(space.n_ants*longest_path)
 
 	def local_pheromone_update(self, edge, ant_previous_position, space):
 		delta_pheromone=1

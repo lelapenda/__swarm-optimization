@@ -10,7 +10,7 @@ FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/"
 #--- CONSTANTS --------------------
 NODES = graph.NODES
 EDGES = graph.EDGES 
-
+INITIAL_NODE = '1'
 
 #--- PROBLEM SETUP --------------------
 N_CITIES = len(NODES)
@@ -21,13 +21,11 @@ BETA = 2
 RHO = 0.1 #paper alpha
 Q0 = 0.9
 
-N_ITERATIONS = 150*N_TEAMS
+N_ITERATIONS = 200*N_TEAMS
 N_SIMULATIONS = 1
-
-
-
 RECURSION_DEPTH=0
 EVALUATOR = 'minmax'
+
 
 #-- Auxiliary --------------
 def compare_ants(ant, index, team, space, graph):
@@ -103,7 +101,7 @@ def main(space, team, graph):
 #--- Loop ----------------------
 for simulacoes in range(0,N_SIMULATIONS):
 
-	space = classes.Space(Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES)
+	space = classes.Space(Q0, BETA, RHO, EPSILON, N_CITIES, N_ANTS, NODES, INITIAL_NODE)
 	edges = [classes.Edge({x,y},lenght) for x,y,lenght in EDGES]
 	graph = classes.Graph(NODES, edges)
 	graph.set_connections(EDGES)
@@ -125,27 +123,21 @@ for simulacoes in range(0,N_SIMULATIONS):
 
 				if teams[i].has_visited_all_nodes==True: #ant has completed graph
 					r = teams[i].evaluation(EVALUATOR)
-					if r<space.best_team_square_sum:
-						space.best_team=teams[i]
-						space.best_team_square_sum = r
+					if r<space.best_team_metric:
+						space.best_team = teams[i]
+						space.best_team_metric = r
 				elif teams[i].reinitialize==True:
 					teams[i] = classes.Team(space, N_ANTS)
 
 		n_teams_completed_path = len((list(filter(lambda x: x.has_visited_all_nodes==True, teams))))
 		if n_teams_completed_path==N_TEAMS: #if all teams have completed
-			
-			graph.update_delta_pheromone(space) #adjust edge's delta pheromone (for each ant)
 			graph.update_pheromone(space) #adjust edge's pheromone
-			
 			teams = [classes.Team(space, N_ANTS) for i in range(0, N_TEAMS)] # team has completed and n_iterations has not finished yet, reinitialize team
-			n_teams_completed_path=0
 
 
 #	for ant in space.best_team.ants:
 #		print(ant.visited_nodes)
-#	print(space.best_team_square_sum)
-
-
+#	print(space.best_team_metric)
 
 cost=0
 for ant in space.best_team.ants:
