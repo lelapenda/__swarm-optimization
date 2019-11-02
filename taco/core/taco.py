@@ -1,11 +1,13 @@
 import numpy as np
 import os
+import time
 import classes
 import graph
 
+start_time = time.time()
+
+
 FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/"
-
-
 
 #--- CONSTANTS --------------------
 NODES = graph.NODES
@@ -132,15 +134,28 @@ for simulacoes in range(0,N_SIMULATIONS):
 
 		n_teams_completed_path = len((list(filter(lambda x: x.has_visited_all_nodes==True, teams))))
 		if n_teams_completed_path==N_TEAMS: #if all teams have completed
+
+			# 2-opt local search
+			'''
+			for team in teams:
+				for ant in team.ants:
+					ant.visited_nodes = graph.two_opt(ant.visited_nodes)
+					ant.path=[]
+					ant.partial_path_lenght=0
+					for n in range(1,len(ant.visited_nodes)):
+						edge = graph.get_edge(ant.visited_nodes[n-1], ant.visited_nodes[n])
+						ant.path.append(edge)
+					ant.partial_path_lenght = graph.get_path_lenght(ant.path)
+				r = team.evaluation(EVALUATOR)
+				if r<space.best_team_metric:
+					space.best_team = team
+					space.best_team_metric = r
+			'''
 			graph.update_pheromone(space) #adjust edge's pheromone
 			teams = [classes.Team(space, N_ANTS) for i in range(0, N_TEAMS)] # team has completed and n_iterations has not finished yet, reinitialize team
 
 
-#	for ant in space.best_team.ants:
-#		print(ant.visited_nodes)
-#	print(space.best_team_metric)
-
-cost=0
+# 2-opt local search for best team
 for ant in space.best_team.ants:
 	ant.visited_nodes = graph.two_opt(ant.visited_nodes)
 	ant.path=[]
@@ -151,5 +166,8 @@ for ant in space.best_team.ants:
 	ant.partial_path_lenght = graph.get_path_lenght(ant.path)
 	print(ant.visited_nodes)
 
-cost = space.best_team.evaluation(EVALUATOR)
-print(cost)
+space.best_team_metric = space.best_team.evaluation(EVALUATOR)
+print(space.best_team_metric)
+
+
+print("--- %s seconds ---" % (time.time() - start_time))
