@@ -17,7 +17,6 @@ class Space():
 		self.best_team = None
 		self.best_team_metric = float('inf')
 		self.initial_node = INITIAL_NODE #random.choice(NODES)
-		self.visited_nodes = [self.initial_node]
 		self.return_initial_node = RETURN_INITIAL_NODE
 
 
@@ -25,6 +24,7 @@ class Space():
 class Team():
 	def __init__(self, space, N_ANTS):
 		self.visited_nodes = [space.initial_node]
+		self.visited_edges = []
 		self.ants = [Ant(space) for i in range(0, N_ANTS)]
 		self.has_visited_all_nodes = False
 		self.reinitialize = False
@@ -127,7 +127,7 @@ class Graph():
 		path_lenghts = [x.partial_path_lenght for x in space.best_team.ants]
 		index = path_lenghts.index(max(path_lenghts))
 		longest_path = space.best_team.ants[index].partial_path_lenght
-		for edge in self.edges:
+		for edge in space.best_team.visited_edges: #self.edges:
 			edge.pheromone = (1-space.rho)*edge.pheromone + space.rho*1/(space.n_ants*longest_path)
 
 	def local_pheromone_update(self, edge, ant_previous_position, space):

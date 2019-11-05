@@ -90,6 +90,7 @@ def main(space, team, graph):
 	ant.partial_path_lenght = graph.get_path_lenght(ant.path)
 
 	team.visited_nodes.append(ant.position) #update ant's visited nodes
+	team.visited_edges.append(to_edge)
 
 	if set(team.visited_nodes)==set(graph.nodes):
 		team.has_visited_all_nodes = True
